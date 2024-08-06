@@ -6,12 +6,14 @@ import (
 
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/dtos"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/entities"
+	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/utils"
 )
 
 type UserHandler struct{}
 
 type Error struct {
-	Message string
+	Message  string   `json:"error,omitempty"`
+	Messages []string `json:"errors,omitempty"`
 }
 
 func NewUserHandler() *UserHandler {
@@ -27,16 +29,14 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Error{Message: "Fields sent seem invalid"})
+		json.NewEncoder(w).Encode(Error{Message: "Some field were not sent or has invalid format"})
 		return
 	}
-	user := &entities.User{
-		ID:          "1234",
-		Name:        newUser.Name,
-		Surname:     newUser.Surname,
-		Email:       newUser.Email,
-		PhotoUrl:    newUser.PhotoUrl,
-		JobPosition: newUser.JobPosition,
+	user, errs := entities.NewUser(newUser)
+	if len(errs) > 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(Error{Messages: utils.ErrorsToStrings(errs)})
+		return
 	}
 	json.NewEncoder(w).Encode(user)
 }
