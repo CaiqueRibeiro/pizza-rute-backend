@@ -26,7 +26,9 @@ func authMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "props", claims)
+		type contextKey string
+		var key contextKey = "props"
+		ctx := context.WithValue(r.Context(), key, claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
