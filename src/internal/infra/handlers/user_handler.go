@@ -26,10 +26,6 @@ func NewUserHandler(repo repositories.UserRepositoryInterface) *UserHandler {
 }
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
 	var newUser dtos.CreateUserInput
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
@@ -47,6 +43,27 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(Error{Message: "Error while trying to register user"})
+		return
+	}
+	json.NewEncoder(w).Encode(user)
+}
+
+func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := h.repo.List()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Error{Message: "Error while trying to list users"})
+		return
+	}
+	json.NewEncoder(w).Encode(users)
+}
+
+func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	user, err := h.repo.FindByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(Error{Message: "User not found"})
 		return
 	}
 	json.NewEncoder(w).Encode(user)

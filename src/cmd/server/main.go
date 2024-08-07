@@ -51,7 +51,9 @@ func main() {
 	userHandler := handlers.NewUserHandler(userRepository)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/users", userHandler.CreateUser)
+	mux.HandleFunc("POST /users", userHandler.CreateUser)
+	mux.HandleFunc("GET /users", userHandler.ListUsers)
+	mux.HandleFunc("GET /users/{id}", userHandler.GetUserByID)
 
 	http.ListenAndServe(":3000", mux)
 }
