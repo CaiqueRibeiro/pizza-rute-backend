@@ -14,11 +14,6 @@ type UserHandler struct {
 	repo repositories.UserRepositoryInterface
 }
 
-type Error struct {
-	Message  string   `json:"error,omitempty"`
-	Messages []string `json:"errors,omitempty"`
-}
-
 func NewUserHandler(repo repositories.UserRepositoryInterface) *UserHandler {
 	return &UserHandler{
 		repo: repo,

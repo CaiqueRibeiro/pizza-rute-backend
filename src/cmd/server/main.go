@@ -12,10 +12,11 @@ import (
 )
 
 var db *sql.DB
+var cfg *configs.Conf
 
 func init() {
 	var err error
-	cfg, err := configs.LoadConfig(".")
+	cfg, err = configs.LoadConfig(".")
 	if err != nil {
 		panic(err)
 	}
@@ -49,11 +50,14 @@ func main() {
 
 	userRepository := repositories.NewUserRepository(db)
 	userHandler := handlers.NewUserHandler(userRepository)
+	accessHandler := handlers.NewAccessHandler(userRepository)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /users", userHandler.CreateUser)
 	mux.HandleFunc("GET /users", userHandler.ListUsers)
 	mux.HandleFunc("GET /users/{id}", userHandler.GetUserByID)
 
-	http.ListenAndServe(":3000", mux)
+	mux.HandleFunc("POST /login", accessHandler.Login)
+
+	http.ListenAndServe(cfg.WebServerPort, mux)
 }

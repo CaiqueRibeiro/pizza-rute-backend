@@ -59,6 +59,11 @@ func (u *User) Validate() []error {
 	return errs
 }
 
+func (u *User) ValidatePassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
+}
+
 func NewUser(newUser dtos.CreateUserInput) (*User, []error) {
 	if len(newUser.TempPassword) < minPassLength {
 		return nil, []error{ErrPasswordLengthIsInvalid}

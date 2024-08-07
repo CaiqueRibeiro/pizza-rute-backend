@@ -11,6 +11,7 @@ type UserRepositoryInterface interface {
 	Create(user *entities.User) error
 	List() ([]*entities.User, error)
 	FindByID(id string) (*entities.User, error)
+	FindByEmail(email string) (*entities.User, error)
 }
 
 type UserRepository struct {
@@ -70,6 +71,19 @@ func (ur *UserRepository) FindByID(id string) (*entities.User, error) {
 	}
 	var u entities.User
 	err = stmt.QueryRowContext(context.Background(), id).Scan(&u.ID, &u.Name, &u.Surname, &u.Email, &u.PhotoUrl, &u.JobPosition, &u.Password)
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+func (ur *UserRepository) FindByEmail(email string) (*entities.User, error) {
+	stmt, err := ur.db.Prepare("SELECT * FROM users WHERE email=?")
+	if err != nil {
+		return nil, err
+	}
+	var u entities.User
+	err = stmt.QueryRowContext(context.Background(), email).Scan(&u.ID, &u.Name, &u.Surname, &u.Email, &u.PhotoUrl, &u.JobPosition, &u.Password)
 	if err != nil {
 		return nil, err
 	}
