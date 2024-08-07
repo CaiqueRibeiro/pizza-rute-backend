@@ -7,6 +7,7 @@ import (
 
 	"github.com/CaiqueRibeiro/pizza-rute/src/configs"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/handlers"
+	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/middlewares"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/repositories"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -53,11 +54,12 @@ func main() {
 	accessHandler := handlers.NewAccessHandler(userRepository)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /users", userHandler.CreateUser)
-	mux.HandleFunc("GET /users", userHandler.ListUsers)
-	mux.HandleFunc("GET /users/{id}", userHandler.GetUserByID)
 
-	mux.HandleFunc("POST /login", accessHandler.Login)
+	mux.Handle("POST /login", middlewares.WithContext(accessHandler.Login))
+
+	mux.Handle("POST /users", middlewares.Authorized(userHandler.CreateUser))
+	mux.Handle("GET /users", middlewares.Authorized(userHandler.ListUsers))
+	mux.Handle("GET /users/{id}", middlewares.Authorized(userHandler.GetUserByID))
 
 	http.ListenAndServe(cfg.WebServerPort, mux)
 }
