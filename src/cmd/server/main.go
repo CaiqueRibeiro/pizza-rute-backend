@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"net/http"
 
+	"github.com/CaiqueRibeiro/pizza-rute/src/cmd/scripts"
 	"github.com/CaiqueRibeiro/pizza-rute/src/configs"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/handlers"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/middlewares"
@@ -12,41 +14,24 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
-var cfg *configs.Conf
-
 func init() {
-	var err error
-	cfg, err = configs.LoadConfig(".")
-	if err != nil {
-		panic(err)
-	}
-	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-	db, err = sql.Open(cfg.DBDriver, dbUrl)
-	if err != nil {
-		panic(err.Error())
-	}
-	stmt, err := db.Prepare(`
-		CREATE TABLE IF NOT EXISTS users(
-		id varchar(255),
-		name varchar(80),
-		surname varchar(255),
-		email varchar(80),
-		photo_url varchar(255),
-		job_position varchar(255),
-		password varchar(255),
-		primary key (id))
-	`)
-	if err != nil {
-		panic(err.Error())
-	}
-	_, err = stmt.Exec()
-	if err != nil {
-		panic(err.Error())
+	ct := flag.Bool("ct", false, "Creates tables before initialization")
+	flag.Parse()
+	if *ct {
+		scripts.CreateTables()
 	}
 }
 
 func main() {
+	cfg, err := configs.LoadConfig(".")
+	if err != nil {
+		panic(err)
+	}
+	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
+	db, err := sql.Open(cfg.DBDriver, dbUrl)
+	if err != nil {
+		panic(err.Error())
+	}
 	defer db.Close()
 
 	userRepository := repositories.NewUserRepository(db)
