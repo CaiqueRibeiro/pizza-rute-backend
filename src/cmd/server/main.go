@@ -2,8 +2,10 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
+	"github.com/CaiqueRibeiro/pizza-rute/src/configs"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/handlers"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/repositories"
 	_ "github.com/go-sql-driver/mysql"
@@ -13,7 +15,12 @@ var db *sql.DB
 
 func init() {
 	var err error
-	db, err = sql.Open("mysql", "root:root@tcp(localhost:3306)/test")
+	cfg, err := configs.LoadConfig(".")
+	if err != nil {
+		panic(err)
+	}
+	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
+	db, err = sql.Open(cfg.DBDriver, dbUrl)
 	if err != nil {
 		panic(err.Error())
 	}
