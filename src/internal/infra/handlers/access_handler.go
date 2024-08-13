@@ -6,6 +6,7 @@ import (
 
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/dtos"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/repositories"
+	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/errors"
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/utils"
 )
 
@@ -26,19 +27,19 @@ func (ar *AccessHandler) Login(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&loginDto)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Error{Message: "Some field were not sent or has invalid format"})
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Some field were not sent or has invalid format"})
 		return
 	}
 	user, err := ar.repo.FindByEmail(loginDto.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(Error{Message: "Invalid Credentials"})
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Invalid Credentials"})
 		return
 	}
 	isValid := user.ValidatePassword(loginDto.Password)
 	if !isValid {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(Error{Message: "Invalid Credentials"})
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Invalid Credentials"})
 		return
 	}
 	token, err := utils.CreateJWT(user.ID.String(), []byte(jwt), jwtExpiresIn)
