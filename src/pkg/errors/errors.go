@@ -1,6 +1,6 @@
-package handlers
+package errors
 
-type Error struct {
+type HandlerError struct {
 	Message  string   `json:"error,omitempty"`
 	Messages []string `json:"errors,omitempty"`
 }

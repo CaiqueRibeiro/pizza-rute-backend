@@ -7,6 +7,7 @@ import (
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/dtos"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/entities"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/repositories"
+	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/errors"
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/utils"
 )
 
@@ -25,19 +26,19 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Error{Message: "Some field were not sent or has invalid format"})
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Some field were not sent or has invalid format"})
 		return
 	}
 	user, errs := entities.NewUser(newUser)
 	if len(errs) > 0 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Error{Messages: utils.ErrorsToStrings(errs)})
+		json.NewEncoder(w).Encode(errors.HandlerError{Messages: utils.ErrorsToStrings(errs)})
 		return
 	}
 	err = h.repo.Create(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Error{Message: "Error while trying to register user"})
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Error while trying to register user"})
 		return
 	}
 	json.NewEncoder(w).Encode(user)
@@ -47,7 +48,7 @@ func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.repo.List()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Error{Message: "Error while trying to list users"})
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Error while trying to list users"})
 		return
 	}
 	json.NewEncoder(w).Encode(users)
@@ -58,7 +59,7 @@ func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	user, err := h.repo.FindByID(id)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(Error{Message: "User not found"})
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "User not found"})
 		return
 	}
 	json.NewEncoder(w).Encode(user)
