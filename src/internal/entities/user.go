@@ -1,25 +1,14 @@
 package entities
 
 import (
-	"errors"
-
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/dtos"
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/entities"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	minPassLength              = 8
-	bCryptCost                 = 12
-	ErrIdIsRequired            = errors.New("id is required")
-	ErrIdIsInvalid             = errors.New("id is not valid")
-	ErrNameIsRequired          = errors.New("name is required")
-	ErrSurnameIsRequired       = errors.New("surname is required")
-	ErrEmailIsRequired         = errors.New("email is required")
-	ErrJobPositionIsRequired   = errors.New("job position is required")
-	ErrPasswordIsRequired      = errors.New("password is required")
-	ErrPasswordIsInvalid       = errors.New("error while trying to save password")
-	ErrPasswordLengthIsInvalid = errors.New("password has to have at least 8 characteres")
+	minPassLength = 8
+	bCryptCost    = 12
 )
 
 type User struct {

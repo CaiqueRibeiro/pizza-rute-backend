@@ -35,8 +35,8 @@ func main() {
 	defer db.Close()
 
 	userRepository := repositories.NewUserRepository(db)
-	userHandler := handlers.NewUserHandler(userRepository)
 	accessHandler := handlers.NewAccessHandler(userRepository)
+	userHandler := handlers.NewUserHandler(userRepository)
 
 	mux := http.NewServeMux()
 
@@ -45,6 +45,11 @@ func main() {
 	mux.Handle("POST /users", middlewares.Authorized(userHandler.CreateUser))
 	mux.Handle("GET /users", middlewares.Authorized(userHandler.ListUsers))
 	mux.Handle("GET /users/{id}", middlewares.Authorized(userHandler.GetUserByID))
+
+	ingredientRepository := repositories.NewIngredientRepository(db)
+	ingredientsHandler := handlers.NewIngredientsHandler(ingredientRepository)
+
+	mux.Handle("POST /ingredients", middlewares.Authorized(ingredientsHandler.CreateIngredient))
 
 	http.ListenAndServe(cfg.WebServerPort, mux)
 }
