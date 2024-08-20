@@ -21,7 +21,7 @@ func NewIngredientsHandler(repo repositories.IngredientRepositoryInterface) *Ing
 	}
 }
 
-func (ih *IngredientsHandler) CreateIngredient(w http.ResponseWriter, r *http.Request) {
+func (h *IngredientsHandler) CreateIngredient(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.CreateIngredientInput
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
@@ -35,10 +35,31 @@ func (ih *IngredientsHandler) CreateIngredient(w http.ResponseWriter, r *http.Re
 		json.NewEncoder(w).Encode(errors.HandlerError{Messages: utils.ErrorsToStrings(errs)})
 		return
 	}
-	err = ih.repo.Create(ingredient)
+	err = h.repo.Create(ingredient)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Error while trying to create new ingredient"})
+		return
+	}
+	json.NewEncoder(w).Encode(ingredient)
+}
+
+func (h *IngredientsHandler) ListIngredients(w http.ResponseWriter, r *http.Request) {
+	ingredients, err := h.repo.List()
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Error while trying to list ingredients"})
+		return
+	}
+	json.NewEncoder(w).Encode(ingredients)
+}
+
+func (h *IngredientsHandler) GetIngredientById(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	ingredient, err := h.repo.FindByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Ingredient not found"})
 		return
 	}
 	json.NewEncoder(w).Encode(ingredient)

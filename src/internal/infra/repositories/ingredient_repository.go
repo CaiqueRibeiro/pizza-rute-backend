@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/entities"
@@ -8,6 +9,8 @@ import (
 
 type IngredientRepositoryInterface interface {
 	Create(ingredient *entities.Ingredient) error
+	List() ([]*entities.Ingredient, error)
+	FindByID(id string) (*entities.Ingredient, error)
 }
 
 type IngredientRepository struct {
@@ -35,4 +38,35 @@ func (ir *IngredientRepository) Create(ingredient *entities.Ingredient) error {
 		return err
 	}
 	return nil
+}
+
+func (ir *IngredientRepository) List() ([]*entities.Ingredient, error) {
+	rows, err := ir.db.Query("SELECT * FROM ingredients")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ingredients []*entities.Ingredient
+	for rows.Next() {
+		var i entities.Ingredient
+		err = rows.Scan(&i.ID, &i.Name, &i.Stock)
+		if err != nil {
+			return nil, err
+		}
+		ingredients = append(ingredients, &i)
+	}
+	return ingredients, nil
+}
+
+func (ir *IngredientRepository) FindByID(id string) (*entities.Ingredient, error) {
+	stmt, err := ir.db.Prepare("SELECT * FROM ingredients WHERE id=?")
+	if err != nil {
+		return nil, err
+	}
+	var i entities.Ingredient
+	err = stmt.QueryRowContext(context.Background(), id).Scan(&i.ID, &i.Name, &i.Stock)
+	if err != nil {
+		return nil, err
+	}
+	return &i, nil
 }
