@@ -50,6 +50,7 @@ func main() {
 	ingredientsHandler := handlers.NewIngredientsHandler(ingredientRepository)
 
 	mux.Handle("POST /ingredients", middlewares.Authorized(ingredientsHandler.CreateIngredient))
+	mux.Handle("PATCH /ingredients/{id}", middlewares.Authorized(ingredientsHandler.UpdateIngredient))
 	mux.Handle("GET /ingredients", middlewares.Authorized(ingredientsHandler.ListIngredients))
 	mux.Handle("GET /ingredients/{id}", middlewares.Authorized(ingredientsHandler.GetIngredientById))
 

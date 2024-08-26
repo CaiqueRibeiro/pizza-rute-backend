@@ -9,6 +9,7 @@ import (
 
 type IngredientRepositoryInterface interface {
 	Create(ingredient *entities.Ingredient) error
+	Update(ingredient *entities.Ingredient) error
 	List() ([]*entities.Ingredient, error)
 	FindByID(id string) (*entities.Ingredient, error)
 }
@@ -40,6 +41,23 @@ func (ir *IngredientRepository) Create(ingredient *entities.Ingredient) error {
 	return nil
 }
 
+func (ir *IngredientRepository) Update(ingredient *entities.Ingredient) error {
+	stmt, err := ir.db.Prepare("UPDATE ingredients SET name = ?, stock = ? WHERE id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(
+		ingredient.Name,
+		ingredient.Stock*100,
+		ingredient.ID.String(),
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (ir *IngredientRepository) List() ([]*entities.Ingredient, error) {
 	rows, err := ir.db.Query("SELECT * FROM ingredients")
 	if err != nil {
@@ -53,6 +71,7 @@ func (ir *IngredientRepository) List() ([]*entities.Ingredient, error) {
 		if err != nil {
 			return nil, err
 		}
+		i.Stock = i.Stock / 100
 		ingredients = append(ingredients, &i)
 	}
 	return ingredients, nil
@@ -68,5 +87,6 @@ func (ir *IngredientRepository) FindByID(id string) (*entities.Ingredient, error
 	if err != nil {
 		return nil, err
 	}
+	i.Stock = i.Stock / 100
 	return &i, nil
 }
