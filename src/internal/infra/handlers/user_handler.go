@@ -6,6 +6,7 @@ import (
 
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/dtos"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/entities"
+	handlers "github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/handlers/handler_helpers"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/repositories"
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/errors"
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/utils"
@@ -22,6 +23,10 @@ func NewUserHandler(repo repositories.UserRepositoryInterface) *UserHandler {
 }
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	if !handlers.IsLoggedUserAllowed(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	var newUser dtos.CreateUserInput
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {

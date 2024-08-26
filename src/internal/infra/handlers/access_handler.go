@@ -42,7 +42,7 @@ func (ar *AccessHandler) Login(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Invalid Credentials"})
 		return
 	}
-	token, err := utils.CreateJWT(user.ID.String(), []byte(jwt), jwtExpiresIn)
+	token, err := utils.CreateJWT(user.ID.String(), user.JobPosition, []byte(jwt), jwtExpiresIn)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

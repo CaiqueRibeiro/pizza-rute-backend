@@ -7,6 +7,8 @@ import (
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/utils"
 )
 
+type ContextClaimsKey string
+
 func Authorized(handler http.HandlerFunc) http.Handler {
 	withValuesInjected := injectValues()
 	return withValuesInjected(authMiddleware(http.HandlerFunc(handler)))
@@ -26,8 +28,7 @@ func authMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		type contextKey string
-		var key contextKey = "props"
+		var key ContextClaimsKey = "props"
 		ctx := context.WithValue(r.Context(), key, claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
