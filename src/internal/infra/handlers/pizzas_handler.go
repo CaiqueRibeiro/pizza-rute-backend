@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/dtos"
@@ -43,10 +42,19 @@ func (h *PizzasHandler) CreatePizza(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.repo.Create(pizza)
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Error while trying to create a pizza receipt"})
 		return
 	}
 	json.NewEncoder(w).Encode(pizza)
+}
+
+func (h *PizzasHandler) ListPizzas(w http.ResponseWriter, r *http.Request) {
+	pizzas, err := h.repo.List()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Error while trying to list pizza receipts"})
+		return
+	}
+	json.NewEncoder(w).Encode(pizzas)
 }

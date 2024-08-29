@@ -86,7 +86,7 @@ func (h *IngredientsHandler) UpdateIngredient(w http.ResponseWriter, r *http.Req
 func (h *IngredientsHandler) ListIngredients(w http.ResponseWriter, r *http.Request) {
 	ingredients, err := h.repo.List()
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Error while trying to list ingredients"})
 		return
 	}

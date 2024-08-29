@@ -22,7 +22,7 @@ type Sauce struct {
 	ID          entities.ID `json:"id"`
 	Name        string      `json:"name,omitempty"`
 	Spicy       bool        `json:"is_spicy,omitempty"`
-	Ingredients []SauceItem `json:"ingredients"`
+	Ingredients []SauceItem `json:"ingredients,omitempty"`
 }
 
 type PizzaItem struct {

@@ -58,6 +58,7 @@ func main() {
 	pizzasHandler := handlers.NewPizzaHandler(pizzaRepository)
 
 	mux.Handle("POST /pizzas", middlewares.Authorized(pizzasHandler.CreatePizza))
+	mux.Handle("GET /pizzas", middlewares.Authorized(pizzasHandler.ListPizzas))
 
 	http.ListenAndServe(cfg.WebServerPort, mux)
 }
