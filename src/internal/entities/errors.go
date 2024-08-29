@@ -14,4 +14,12 @@ var (
 	ErrPasswordLengthIsInvalid = errors.New("password has to have at least 8 characteres")
 
 	ErrStockIsRequired = errors.New("stock is required")
+
+	ErrPriceIsInvalid         = errors.New("Pizza price cannot be 0 or less")
+	ErrSizeIsRequired         = errors.New("Pizza size is required")
+	ErrSizeIsInvalid          = errors.New("Pizza size has to be SMALL, MEDIUM or BIG")
+	ErrSauceIsRequired        = errors.New("Pizza sauce is required")
+	ErrIngredientsAreRequired = errors.New("Pizza ingredients are required")
+	ErrIngredientIdIsInvalid  = errors.New("Pizza ingredient ID is invalid")
+	ErrSauceIdIsInvalid       = errors.New("Pizza sauce ID is invalid")
 )

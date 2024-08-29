@@ -54,5 +54,10 @@ func main() {
 	mux.Handle("GET /ingredients", middlewares.Authorized(ingredientsHandler.ListIngredients))
 	mux.Handle("GET /ingredients/{id}", middlewares.Authorized(ingredientsHandler.GetIngredientById))
 
+	pizzaRepository := repositories.NewPizzaRepository(db)
+	pizzasHandler := handlers.NewPizzaHandler(pizzaRepository)
+
+	mux.Handle("POST /pizzas", middlewares.Authorized(pizzasHandler.CreatePizza))
+
 	http.ListenAndServe(cfg.WebServerPort, mux)
 }

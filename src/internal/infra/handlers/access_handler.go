@@ -20,7 +20,7 @@ func NewAccessHandler(repo repositories.UserRepositoryInterface) *AccessHandler 
 	}
 }
 
-func (ar *AccessHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *AccessHandler) Login(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(string)
 	jwtExpiresIn := r.Context().Value("jwtExpiresIn").(int)
 	var loginDto dtos.LoginInput
@@ -30,7 +30,7 @@ func (ar *AccessHandler) Login(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Some field were not sent or has invalid format"})
 		return
 	}
-	user, err := ar.repo.FindByEmail(loginDto.Email)
+	user, err := h.repo.FindByEmail(loginDto.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(errors.HandlerError{Message: "Invalid Credentials"})

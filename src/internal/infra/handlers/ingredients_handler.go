@@ -6,7 +6,7 @@ import (
 
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/dtos"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/entities"
-	handlers "github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/handlers/handler_helpers"
+	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/handlers/handler_helpers"
 	"github.com/CaiqueRibeiro/pizza-rute/src/internal/infra/repositories"
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/errors"
 	"github.com/CaiqueRibeiro/pizza-rute/src/pkg/utils"
@@ -23,7 +23,7 @@ func NewIngredientsHandler(repo repositories.IngredientRepositoryInterface) *Ing
 }
 
 func (h *IngredientsHandler) CreateIngredient(w http.ResponseWriter, r *http.Request) {
-	if !handlers.IsLoggedUserAllowed(r) {
+	if !handler_helpers.IsLoggedUserAllowed(r) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -50,7 +50,7 @@ func (h *IngredientsHandler) CreateIngredient(w http.ResponseWriter, r *http.Req
 }
 
 func (h *IngredientsHandler) UpdateIngredient(w http.ResponseWriter, r *http.Request) {
-	if !handlers.IsLoggedUserAllowed(r) {
+	if !handler_helpers.IsLoggedUserAllowed(r) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
